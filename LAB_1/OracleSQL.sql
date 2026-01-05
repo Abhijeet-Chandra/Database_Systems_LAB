@@ -26,6 +26,9 @@ UPDATE employee SET salary = 54000 WHERE emp_no = 5;
 /* Commit Changes */
 COMMIT;
 
+DELETE FROM employee WHERE emp_address = 'MANGALORE';
+COMMIT;
+
 /* Rename Table */
 RENAME employee TO employee1;
 
