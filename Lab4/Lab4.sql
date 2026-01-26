@@ -22,14 +22,14 @@ GROUP BY dept_name
 HAVING AVG(salary)>42000;
 
 -- 5. Find the enrolment of each section that was offered in Spring 2009.
-SELECT sec.sec_id, COUNT(DISTINCT t.ID)
-FROM takes t 
-JOIN section sec 
+SELECT sec.course_id,sec.sec_id, COUNT(DISTINCT t.ID) AS num_students
+FROM section sec  
+LEFT JOIN takes t
 ON sec.sec_id = t.sec_id
 AND sec.course_id = t.course_id 
 AND sec.semester = t.semester
 AND sec.year = t.year
-AND sec.year = 2009 
+WHERE sec.year = 2009 
 AND sec.semester = 'Spring'
 GROUP BY sec.sec_id, sec.course_id;
 
