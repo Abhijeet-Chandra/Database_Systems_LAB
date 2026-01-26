@@ -83,7 +83,14 @@ SELECT name FROM instructor WHERE salary > ALL(
     SELECT salary FROM instructor WHERE dept_name = 'Biology'
 );
 /*11. Find the departments that have the highest average salary.*/
-
+SELECT dept_name, AVG(salary) as max_sal
+FROM instructor 
+GROUP BY dept_name 
+HAVING AVG(salary)>=ALL(
+    SELECT AVG(salary)
+    FROM instructor 
+    GROUP BY dept_name
+);
 /*12. Find the names of those departments whose budget is lesser than the average salary
 of all instructors.*/
 SELECT dept_name FROM department WHERE budget < (SELECT AVG(salary) FROM instructor);
