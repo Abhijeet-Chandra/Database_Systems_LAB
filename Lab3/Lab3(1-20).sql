@@ -120,12 +120,11 @@ SELECT s.name, s.ID FROM student s WHERE NOT EXISTS(
     )
 );
 /*15. Find all courses that were offered at most once in 2009.*/
-SELECT course_id,title FROM course WHERE course_id NOT IN(
-SELECT course_id
-FROM section 
-WHERE year = 2009 
+SELECT course_id, COUNT(*) as count
+FROM section
+WHERE year = 2009
 GROUP BY course_id
-HAVING count(course_id)>1);
+HAVING COUNT(*) <= 1;
 /*16. Find all the students who have opted at least two courses offered by CSE department.*/
 SELECT ID,COUNT(course_id) AS cnt
 FROM takes 
