@@ -1,3 +1,12 @@
+SCHEMA:
+Employee(Ssn, Fname, Minit, Lname, Bdate, Address, Sex, Salary, Super_ssn, Dno)
+Department(Dnumber, Dname, Mgr_ssn, Mgr_start_date)
+Dept_Locations(Dnumber, Dlocation)
+Project(Pnumber, Pname, Plocation, Dnum)
+Works_On(Essn, Pno, Hours)
+Dependent(Essn, Dependent_name, Sex, Bdate, Relationship)
+
+
 --Q1 Retrieve the birth date and address of the employee(s) whose name is ‘John B.
 -- Smith’. Retrieve the name and address of all employees who work for the ‘Research’ department.
 SELECT Bdate, address
