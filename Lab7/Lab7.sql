@@ -206,3 +206,35 @@ BEGIN
 	END IF;
 END;
 /
+
+-- Based on the University database schema, write a PL/SQL block to display the
+-- details of the Instructor whose name is supplied by the user. Use exceptions to show appropriate error message for the following cases:
+-- a. Multiple instructors with the same name 
+-- b. No instructor for the given name	
+	
+DECLARE
+    v_name Instructor.NAME%TYPE;
+    v_id Instructor.ID%TYPE;
+    v_dept_name Instructor.DEPT_NAME%TYPE;
+    v_salary Instructor.SALARY%TYPE;
+BEGIN
+        v_name := '&instructor_name';
+
+        SELECT ID, dept_name, salary
+        INTO v_id, v_dept_name, v_salary
+        FROM INSTRUCTOR
+        WHERE name = v_name;
+
+        DBMS_OUTPUT.PUT_LINE('Instructor Details');
+        DBMS_OUTPUT.PUT_LINE('-------------------');
+        DBMS_OUTPUT.PUT_LINE('ID: ' || v_id);
+        DBMS_OUTPUT.PUT_LINE('Name: ' || v_name);
+        DBMS_OUTPUT.PUT_LINE('Dept_name: ' || v_dept_name);
+        DBMS_OUTPUT.PUT_LINE('Salary: ' || v_salary);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Error: No instructor found with the given name.');
+        WHEN TOO_MANY_ROWS THEN
+            DBMS_OUTPUT.PUT_LINE('Error: Multiple instructors found with the same name.');    
+END;
+/   
