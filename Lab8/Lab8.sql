@@ -165,3 +165,20 @@ BEGIN
 END;
 /
 
+-- Q6) Write a PL/SQL block to print the list of Instructors teaching a specified course.
+
+DECLARE
+	v_course_name TEACHES.course_id%TYPE;
+	CURSOR c1(p_course_id teaches.course_id%TYPE) IS
+	SELECT name 
+	FROM instructor i
+	JOIN teaches t ON
+	t.id = i.id
+	WHERE t.course_id = p_course_id;
+BEGIN
+	v_course_name := '&course_name';
+	FOR rec IN c1(v_course_name) LOOP
+		DBMS_OUTPUT.PUT_LINE(rec.name);
+	END LOOP;
+END;
+/
