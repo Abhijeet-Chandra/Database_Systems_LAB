@@ -155,6 +155,61 @@ SQL> BEGIN
   6  END;
   7  /
 
+
+-- 7. Based on the University Database Schema in Lab 2, create a package to include
+-- the following:
+-- a) A named procedure to list the instructor_names of given department b) A function which returns the max salary for the given department
+-- c) Write a PL/SQL block to demonstrate the usage of above package components
+
+
+	  SQL> CREATE OR REPLACE PACKAGE univ_pkg AS
+  2     PROCEDURE list(p_dept VARCHAR2);
+  3     FUNCTION max_sal(p_dept VARCHAR2) RETURN NUMBER;
+  4  END univ_pkg;
+  5  /
+
+Package created.
+
+SQL>
+SQL>
+SQL> CREATE OR REPLACE PACKAGE BODY univ_pkg AS
+  2     PROCEDURE list(p_dept VARCHAR2) AS
+  3     BEGIN
+  4             FOR x IN(
+  5                     SELECT name FROM instructor
+  6                     WHERE dept_name = p_dept
+  7             )LOOP
+  8                     DBMS_OUTPUT.PUT_LINE(x.name ||' ');
+  9             END LOOP;
+ 10     END list;
+ 11
+ 12     FUNCTION max_sal(p_dept VARCHAR2) RETURN NUMBER
+ 13     AS
+ 14             maxx NUMBER;
+ 15     BEGIN
+ 16             SELECT max(salary) INTO maxx
+ 17             FROM instructor
+ 18             WHERE dept_name = p_dept;
+ 19
+ 20             RETURN maxx;
+ 21     END max_sal;
+ 22  END univ_pkg;
+ 23  /
+
+Package body created.
+
+SQL>
+SQL> DECLARE
+  2     v_dept VARCHAR2(50);
+  3     v_max NUMBER;
+  4  BEGIN
+  5     v_dept := '&department';
+  6     univ_pkg.list(v_dept);
+  7     v_max := univ_pkg.max_sal(v_dept);
+  8     DBMS_OUTPUT.PUT_LINE('Max salary for ' || v_dept || ' is: '||v_max);
+  9  END;
+ 10  /
+
 -- Q8)Write a PL/SQL procedure to return simple and compound interest (OUT parameters) along with the Total Sum (IN OUT) i.e. Sum of Principle and Interest taking as input the principle, rate of interest and number of years (IN parameters). Call this procedure from an anonymous block.
 
 SQL> CREATE or REPLACE PROCEDURE calc(
