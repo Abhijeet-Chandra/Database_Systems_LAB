@@ -42,35 +42,41 @@ SQL> CREATE OR REPLACE PROCEDURE display_q2 (p_dept_name VARCHAR2)
   4  /
    
 -- Q3)Based on the University Database Schema in Lab 2, write a Pl/Sql block of code that lists the most popular course (highest number of students take it) for each of the departments. It should make use of a procedure course_popular which finds the most popular course in the given department.
-SQL> CREATE OR REPLACE PROCEDURE display_q3 (dept_name VARCHAR2)
-  2  IS
-  3  BEGIN
-  4     FOR c IN(
-  5             SELECT c.course_id
-  6             FROM course c
-  7             JOIN takes t ON c.course_id = t.course_id
-  8             WHERE c.dept_name = dept_name
-  9             GROUP BY c.course_id
- 10             HAVING COUNT(*) >= ALL(
- 11                     SELECT COUNT(*)
- 12                     FROM course c
- 13                     JOIN takes t ON c.course_id = t.course_id
- 14                     WHERE c.dept_name = dept_name
- 15                     GROUP BY c.course_id
- 16             )
- 17     )
- 18     LOOP
- 19             DBMS_OUTPUT.PUT_LINE(c.course_id);
- 20     END LOOP;
- 21  END;
- 22  /
+CREATE OR REPLACE PROCEDURE display_q3(p_dept VARCHAR2)
+IS
+BEGIN
+	FOR x IN(
+		SELECT c.course_id, COUNT(t.id) as cnt
+		FROM course c
+		LEFT JOIN takes t ON
+		c.course_id = t.course_id
+		WHERE c.dept_name = p_dept
+		GROUP BY c.course_id
+		HAVING COUNT(t.id) >= ALL(
+			SELECT COUNT(t.id) as cnt
+			FROM course c
+			LEFT JOIN takes t ON
+			c.course_id = t.course_id
+			WHERE c.dept_name = p_dept
+			GROUP BY c.course_id
+		)
+	)
+	LOOP
+		DBMS_OUTPUT.PUT_LINE(
+			'Dept: ' || p_dept || 
+			' Course: ' || x.course_id || 
+			' Students: ' || x.cnt
+		);
+	END LOOP;
+END;
+/
 
-SQL> set SERVEROUTPUT ON;
-SQL> BEGIN
-  2     display_q3('Biology');
-  3  END;
-  4  /
-
+BEGIN
+	FOR d IN (SELECT dept_name FROM department) LOOP
+		display_q3(d.dept_name);
+	END LOOP;
+END;
+/
 
 -- Q4)
 -- Based on the University Database Schema in Lab 2, write a procedure which takes
