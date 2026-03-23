@@ -114,18 +114,24 @@ END;
 -- less than 30 total credit (tot-cred), deregister the student from that course. (Delete the entry in Takes table)
 DECLARE
 	CURSOR c1 IS
-	SELECT t.course_id, t.id
-	FROM student s JOIN
-	takes t ON t.id = s.id
-	WHERE t.course_id = 'CS-101'
-	AND s.tot_cred < 30;
+	SELECT s.id, s.tot_cred, t.course_id, t.sec_id, t.semester, t.year
+	FROM student s
+	JOIN takes t ON
+	s.id = t.id
+	WHERE t.course_id = 'CS-101';
 BEGIN
 	FOR rec IN c1 LOOP
-		DELETE FROM takes
-		WHERE course_id = rec.course_id
-		AND id = rec.id;
-		DBMS_OUTPUT.PUT_LINE('Deleted: ' || rec.id);
-	END LOOP;	
+		DBMS_OUTPUT.PUT_LINE('Id: ' || rec.id || ' Tot cred: ' || rec.tot_cred);
+		IF rec.tot_cred < 30 THEN
+			DELETE FROM takes
+			WHERE id = rec.id
+			AND course_id = rec.course_id
+			AND sec_id = rec.sec_id
+			AND semester = rec.semester
+			AND year = rec.year;
+			DBMS_OUTPUT.PUT_LINE('Deleted: '||' Id: ' || rec.id || ' Tot cred: ' || rec.tot_cred);
+		END IF;
+	END LOOP;
 END;
 /
 
