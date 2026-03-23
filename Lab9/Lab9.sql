@@ -148,3 +148,39 @@ SQL> BEGIN
   5     END LOOP;
   6  END;
   7  /
+
+-- Q8)Write a PL/SQL procedure to return simple and compound interest (OUT parameters) along with the Total Sum (IN OUT) i.e. Sum of Principle and Interest taking as input the principle, rate of interest and number of years (IN parameters). Call this procedure from an anonymous block.
+
+SQL> CREATE or REPLACE PROCEDURE calc(
+  2     P IN NUMBER,
+  3     R IN NUMBER,
+  4     T IN NUMBER,
+  5     SI OUT NUMBER,
+  6     CI OUT NUMBER,
+  7     tot IN OUT NUMBER
+  8  )
+  9  IS
+ 10  BEGIN
+ 11     SI := (P*R*T)/100;
+ 12     CI := P*(POWER(1 + R/100, T)-1);
+ 13     tot := P + CI;
+ 14  END;
+ 15  /
+
+Procedure created.
+   
+SQL> DECLARE
+  2     P NUMBER;
+  3     R NUMBER;
+  4     T NUMBER;
+  5     SI NUMBER;
+  6     CI NUMBER;
+  7     tot NUMBER;
+  8  BEGIN
+  9     P := '&Principal';
+ 10     R := '&Rate';
+ 11     T := '&Time';
+ 12     calc(P,R,T,SI,CI,tot);
+ 13     DBMS_OUTPUT.PUT_LINE('SI: ' || SI || ' CI: ' || CI || ' Tot: ' || tot);
+ 14  END;
+ 15  /
