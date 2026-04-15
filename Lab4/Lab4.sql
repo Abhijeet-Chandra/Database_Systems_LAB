@@ -61,16 +61,30 @@ GROUP BY dept_name
 HAVING AVG(salary) > 42000;
 
 -- 10. Find the sections that had the maximum enrolment in Spring 2010
-SELECT course_id,sec_id, COUNT(DISTINCT ID)
-FROM takes 
-WHERE semester = 'Spring' AND year = 2010
-GROUP BY course_id, sec_id
-HAVING COUNT(DISTINCT ID)>=ALL(
-    SELECT COUNT(DISTINCT ID)
-    FROM takes
-    WHERE semester = 'Spring' AND year = 2010
-    GROUP BY course_id, sec_id
-);
+SQL> select sec.course_id, sec.sec_id, sec.semester, sec.year, COUNT(t.id) as num_students
+  2  FROM section sec LEFT JOIN takes t ON
+  3  sec.course_id = t.course_id
+  4  AND sec.sec_id = t.sec_id
+  5  AND sec.semester = t.semester
+  6  AND sec.year = t.year
+  7  WHERE sec.year = '2010'
+  8  AND sec.semester = 'Spring'
+  9  GROUP BY sec.course_id, sec.sec_id, sec.semester, sec.year
+ 10  HAVING COUNT(t.id) >= ALL(
+ 11     select COUNT(t.id) as num_students
+ 12     FROM section sec LEFT JOIN takes t ON
+ 13     sec.course_id = t.course_id
+ 14     AND sec.sec_id = t.sec_id
+ 15     AND sec.semester = t.semester
+ 16     AND sec.year = t.year
+ 17     WHERE sec.year = '2010'
+ 18     AND sec.semester = 'Spring'
+ 19     GROUP BY sec.course_id, sec.sec_id, sec.semester, sec.year
+ 20  );
+
+COURSE_I SEC_ID   SEMEST       YEAR NUM_STUDENTS
+-------- -------- ------ ---------- ------------
+CS-315   1        Spring       2010            2
 
 -- 11. Find the names of all instructors who teach all students that belong to ‘CSE’ department.
 -- SELECT ID, name
