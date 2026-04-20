@@ -126,32 +126,32 @@ SQL> BEGIN
 
 -- Q6)Based on the University Database Schema in Lab 2, write a Pl/Sql block of code that lists the highest paid Instructor in each of the Department. It should make use of a function department_highest which returns the highest paid Instructor for the given branch.
 
-SQL> CREATE OR REPLACE FUNCTION display_q6(p_dept_name VARCHAR2)
-  2  return VARCHAR2 as
-  3  highest instructor.name%type;
-  4  BEGIN
-  5     SELECT name INTO highest
-  6     FROM instructor
-  7     WHERE dept_name = p_dept_name
-  8     AND salary = (
-  9             SELECT MAX(salary) FROM instructor
- 10             WHERE dept_name = p_dept_name
- 11     );
- 12
- 13     RETURN highest;
- 14  END;
- 15  /
+CREATE OR REPLACE FUNCTION department_highest(p_dept_name varchar2) RETURN VARCHAR2
+IS
+	v_highest_paid VARCHAR2(20);
+	v_max_pay NUMBER(10) := 0;
+BEGIN
+	FOR x IN (
+		SELECT salary,name from instructor WHERE dept_name  = p_dept_name
+	)
+	LOOP
+		IF x.salary > v_max_pay THEN
+			v_max_pay := x.salary;
+			v_highest_paid := x.name;
+		END IF;
+	END LOOP;
+	
+	RETURN v_highest_paid;
+END;
+/
 
-Function created.
 
-SQL>
-SQL> BEGIN
-  2     FOR x IN (select DISTINCT dept_name FROM instructor)
-  3     LOOP
-  4             DBMS_OUTPUT.PUT_LINE(x.dept_name || ' -> ' || display_q6(x.dept_name));
-  5     END LOOP;
-  6  END;
-  7  /
+BEGIN
+	FOR d IN (select distinct dept_name from department) LOOP
+		DBMS_OUTPUT.PUT_LINE(' Dept: ' || d.dept_name || ', Highest paid: ' || department_highest(d.dept_name));
+	END LOOP;
+END;
+/
 
 
 -- 7. Based on the University Database Schema in Lab 2, create a package to include
