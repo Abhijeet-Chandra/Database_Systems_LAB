@@ -54,3 +54,47 @@ END;
 UPDATE INSTRUCTOR SET salary = 10000 WHERE id = '10101';
 
 select * from OLD_DATA_INSTRUCTOR;
+
+
+-- 3. Based on the University Schema, write a database trigger on Instructor that checks
+-- the following:
+--  The name of the instructor is a valid name containing only alphabets.  The salary of an instructor is not zero and is positive
+--  The salary does not exceed the budget of the department to which the
+-- instructor belongs
+
+CREATE OR REPLACE TRIGGER triggu
+BEFORE INSERT OR UPDATE ON instructor
+FOR EACH ROW
+DECLARE
+	v_budget department.budget%type;
+BEGIN
+	IF NOT REGEXP_LIKE(:NEW.name, '^[A-Za-z ]+$') THEN
+		RAISE_APPLICATION_ERROR(-20001, 'NAME SHOULD CONTAIN ONLY ALPHABETS');
+	END IF;
+	IF :NEW.salary <=0  THEN
+		RAISE_APPLICATION_ERROR(-20002, 'salary should be positive nigga');
+	END IF;
+	SELECT budget into v_budget FROm department WHERE dept_name = :NEW.dept_name;
+	IF :NEW.salary > v_budget THEN
+		RAISE_APPLICATION_ERROR(-20003, 'salary should be less than budget');
+	END IF;
+END;
+/
+
+-- 4. Create a transparent audit system for a table Client_master (client_no, name,
+-- address, Bal_due). The system must keep track of the records that are being deleted or updated. The functionality being when a record is deleted or modified the original record details and the date of operation are stored in the auditclient (client_no, name, bal_due, operation, userid, opdate) table, then the delete or update is allowed to go through.
+
+
+CREATE OR REPLACE TRIGGER triggu
+BEFORE UPDATE OR DELETE ON Client_master
+FOR EACH ROW
+BEGIN
+    IF UPDATING THEN
+        INSERT INTO auditclient VALUES(:OLD.client_no, :OLD.name, :OLD.bal_due, 'UPDATE', USER , SYSDATE);
+    END IF;
+
+    IF DELETING THEN
+        INSERT INTO auditclient VALUES(:OLD.client_no, :OLD.name, :OLD.bal_due, 'DELETE', USER, SYSDATE);
+    END IF;
+END;
+/
